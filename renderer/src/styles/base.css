@@ -1,0 +1,109 @@
+/* =========================================
+   BASE — variables, reset, layout
+========================================= */
+:root {
+  --bg:       #f6f7f8;
+  --card:     #ffffff;
+  --text:     #0f172a;
+  --muted:    rgba(15, 23, 42, 0.65);
+  --border:   rgba(15, 23, 42, 0.10);
+  --shadow:   0 10px 30px rgba(2, 6, 23, 0.08);
+  --input-bg: #ffffff;
+
+  --green:      #7ad8b0;
+  --green-2:    #55c99a;
+  --green-soft: rgba(122, 216, 176, 0.22);
+  --danger:     #ff4d4d;
+
+  --sidebar:        #0c5a55;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebarW:       260px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────────── */
+.appLayout { min-height: 100vh; }
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────────── */
+.sidebar {
+  position: fixed; left: 0; top: 0;
+  width: var(--sidebarW); height: 100vh;
+  background: var(--sidebar); color: #fff;
+  border-right: 1px solid var(--sidebar-border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+.sidebarHeader {
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+}
+.sidebarBrand { font-weight: 900; font-size: 18px; }
+.sidebarSub   { margin-top: 4px; font-size: 12px; opacity: 0.85; }
+
+.sideNav {
+  padding: 12px; display: grid; gap: 10px; align-content: start;
+  flex: 1; overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.20) transparent;
+}
+.sideNav::-webkit-scrollbar       { width: 4px; }
+.sideNav::-webkit-scrollbar-track { background: transparent; }
+.sideNav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.20); border-radius: 999px; }
+.sideNav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.35); }
+
+.sideItem {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: 12px;
+  border: 1px solid var(--sidebar-border);
+  background: rgba(255,255,255,0.06); color: #fff;
+  cursor: pointer; text-align: left; font-weight: 800; font-size: 14px;
+}
+.sideItem:hover  { background: rgba(255,255,255,0.10); }
+.sideItem.active { background: rgba(122,216,176,0.20); border-color: rgba(122,216,176,0.55); }
+
+.dot { width: 10px; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.7); flex-shrink: 0; }
+.sideItem.active .dot { background: var(--green); }
+
+.main        { margin-left: var(--sidebarW); min-height: 100vh; }
+.mainContent { width: 100%; padding: 36px 40px 60px; }
+.container   { width: 100%; max-width: 1400px; margin: 0 auto; }
+
+/* ── Cards ──────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px; box-shadow: var(--shadow);
+}
+
+/* ── Página ─────────────────────────────────────────────────────────────────── */
+.page h2 { margin: 0 0 16px; font-size: 26px; font-weight: 900; }
+.pageHeaderRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.pageTitle { margin: 0; font-size: 26px; font-weight: 900; }
+
+/* ── Forms ──────────────────────────────────────────────────────────────────── */
+.field { display: grid; gap: 5px; }
+.field span { font-size: 13px; color: var(--muted); font-weight: 800; }
+
+input, select {
+  width: 100%; min-height: 38px;
+  background: var(--input-bg); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 10px; border-radius: 10px; outline: none; font-size: 14px;
+}
+input:focus, select:focus {
+  border-color: rgba(85, 201, 154, 0.9);
+  box-shadow: 0 0 0 3px rgba(122, 216, 176, 0.25);
+}
+
+/* ── Misceláneos ─────────────────────────────────────────────────────────────── */
+.rowBetween { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.emptyState { padding: 40px 0; color: var(--muted); font-size: 15px; text-align: center; }
+.muted      { color: var(--muted); font-size: 13px; }

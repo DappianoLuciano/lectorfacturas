@@ -1,0 +1,7 @@
+node_modules/
+renderer/node_modules/
+renderer/dist/
+dist-electron/
+*.log
+.env
+facturas.json

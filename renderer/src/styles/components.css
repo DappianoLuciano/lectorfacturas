@@ -1,0 +1,213 @@
+/* =========================================
+   COMPONENTS — botones, tabla, badges, toast
+========================================= */
+
+/* ── Botones ────────────────────────────────────────────────────────────────── */
+.btn {
+  background: rgba(122, 216, 176, 0.18); border: 1px solid rgba(85, 201, 154, 0.35);
+  color: #0b3a2f; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-weight: 900;
+  font-size: 14px; transition: background 0.15s;
+}
+.btn:hover    { background: rgba(122, 216, 176, 0.30); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btnPrimary {
+  background: var(--green-2); border: 1px solid var(--green-2);
+  color: #fff; padding: 10px 18px; border-radius: 12px;
+  cursor: pointer; font-weight: 900; font-size: 14px;
+}
+.btnPrimary:hover    { background: #44b888; }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btnDanger {
+  background: rgba(255, 77, 77, 0.12); border: 1px solid rgba(255, 77, 77, 0.35);
+  color: #b91c1c; padding: 10px 16px; border-radius: 12px;
+  cursor: pointer; font-weight: 900; font-size: 14px;
+}
+.btnDanger:hover { background: rgba(255, 77, 77, 0.22); }
+
+.btnSmall {
+  border: 1px solid var(--border); background: var(--card);
+  border-radius: 10px; padding: 7px 12px; cursor: pointer;
+  font-weight: 800; font-size: 13px; color: var(--text);
+}
+.btnSmall:hover { background: rgba(122, 216, 176, 0.12); border-color: rgba(85, 201, 154, 0.30); }
+
+.btnDangerSmall {
+  border: 1px solid rgba(255, 77, 77, 0.35); background: rgba(255, 77, 77, 0.10);
+  border-radius: 10px; padding: 7px 12px; cursor: pointer;
+  font-weight: 900; font-size: 13px; color: #b91c1c;
+}
+.btnDangerSmall:hover { background: rgba(255, 77, 77, 0.20); }
+
+
+/* ── Multiplicadores ─────────────────────────────────────────────────────────── */
+.multRow { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.multBtn {
+  padding: 4px 9px; border-radius: 8px;
+  border: 1px solid rgba(85, 201, 154, 0.45);
+  background: rgba(122, 216, 176, 0.14);
+  color: #0b3a2f; font-weight: 900; font-size: 12px;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.multBtn:hover    { background: rgba(85, 201, 154, 0.30); border-color: var(--green-2); }
+.multBtn.selected { background: var(--green-2); border-color: var(--green-2); color: #fff; }
+
+/* ── Upload area ─────────────────────────────────────────────────────────────── */
+.uploadArea {
+  border: 2px dashed rgba(85, 201, 154, 0.45);
+  border-radius: 20px; padding: 60px 40px;
+  text-align: center; cursor: pointer;
+  background: rgba(122, 216, 176, 0.06);
+  transition: background 0.15s, border-color 0.15s;
+}
+.uploadArea:hover {
+  background: rgba(122, 216, 176, 0.12);
+  border-color: var(--green-2);
+}
+.uploadIcon  { font-size: 48px; margin-bottom: 12px; }
+.uploadTitle { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+.uploadHint  { color: var(--muted); font-size: 14px; }
+
+/* ── Tabla de productos ──────────────────────────────────────────────────────── */
+.tableWrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+
+.factTable {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; min-width: 1000px;
+}
+
+.factTable th {
+  padding: 10px 10px;
+  font-weight: 900; font-size: 12px;
+  color: var(--muted); background: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.factTable td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.factTable tbody tr:last-child td { border-bottom: none; }
+.factTable tbody tr:hover td      { background: rgba(122, 216, 176, 0.05); }
+
+.factTable input {
+  min-height: 32px; padding: 5px 8px; font-size: 13px;
+  border-radius: 8px; width: 100%;
+}
+
+.colNum    { width: 36px; text-align: center; color: var(--muted); font-size: 12px; }
+.colCant   { width: 52px; text-align: center; font-weight: 900; }
+.colCodProv { min-width: 130px; font-weight: 900; font-size: 12px; }
+.colDesc   { min-width: 160px; }
+.colCosto  { width: 120px; text-align: center; white-space: nowrap; font-weight: 900; }
+.colCodInt { width: 90px; }
+.colMult   { min-width: 220px; }
+.colPrecio { min-width: 120px; text-align: right; white-space: nowrap; font-weight: 900; color: #0b7a55; }
+
+.colPrecio input {
+  width: 80px;
+  text-align: right; font-weight: 900; font-size: 13px;
+  color: #0b7a55; background: transparent;
+  border: none; outline: none; cursor: text;
+}
+.colPrecio input::placeholder { color: var(--muted); font-weight: 400; }
+.colPrecio input:focus {
+  background: rgba(11, 122, 85, 0.06);
+  border-radius: 6px;
+}
+
+/* ── Badge país ─────────────────────────────────────────────────────────────── */
+.paisBadge {
+  display: inline-block; padding: 2px 7px; border-radius: 6px;
+  font-size: 11px; font-weight: 900;
+  background: rgba(122, 216, 176, 0.18);
+  border: 1px solid rgba(85, 201, 154, 0.35);
+  color: #0b5a3a;
+}
+
+/* ── Resumen header factura ──────────────────────────────────────────────────── */
+.facturaHeader {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  padding: 12px 14px; background: rgba(122, 216, 176, 0.10);
+  border: 1px solid rgba(85, 201, 154, 0.30);
+  border-radius: 14px; margin-bottom: 14px;
+}
+.facturaHeaderItem { display: flex; flex-direction: column; gap: 2px; }
+.facturaHeaderItem .label { font-size: 11px; color: var(--muted); font-weight: 900; text-transform: uppercase; }
+.facturaHeaderItem .value { font-size: 14px; font-weight: 900; }
+
+/* ── Apply-all row ───────────────────────────────────────────────────────────── */
+.applyAllRow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: rgba(122, 216, 176, 0.08);
+  border-radius: 10px; margin-bottom: 10px; flex-wrap: wrap;
+}
+.applyAllRow span { font-size: 13px; font-weight: 800; color: var(--muted); }
+
+/* ── Barra de acciones ───────────────────────────────────────────────────────── */
+.actionBar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  padding: 12px 0; border-top: 1px solid var(--border); margin-top: 14px;
+}
+
+/* ── Toast ──────────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; right: 18px; bottom: 18px;
+  background: rgba(255, 255, 255, 0.96); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 14px; border-radius: 12px;
+  z-index: 9999; font-size: 13px; max-width: 380px;
+  box-shadow: var(--shadow); pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+/* ── Modal de confirmación ───────────────────────────────────────────────────── */
+.modalOverlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+}
+.modalBox {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 28px 22px;
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.18);
+  min-width: 320px; max-width: 420px; width: 90%;
+}
+.modalTitle {
+  font-size: 18px; font-weight: 900; margin-bottom: 10px;
+}
+.modalMsg {
+  font-size: 14px; color: var(--muted); margin-bottom: 22px; line-height: 1.6;
+}
+.modalActions {
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ── Historial table ─────────────────────────────────────────────────────────── */
+.histTable { width: 100%; border-collapse: collapse; font-size: 14px; }
+.histTable th {
+  padding: 10px 12px; text-align: left; font-weight: 900;
+  font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border);
+}
+.histTable td { padding: 12px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.histTable tbody tr:last-child td { border-bottom: none; }
+.histTable tbody tr:hover td { background: rgba(122, 216, 176, 0.06); }
+
+/* ── Spinner ────────────────────────────────────────────────────────────────── */
+.spinner {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 4px solid rgba(85, 201, 154, 0.25);
+  border-top-color: var(--green-2);
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.spinnerWrap { text-align: center; padding: 60px 20px; }
+.spinnerWrap p { margin-top: 14px; color: var(--muted); font-size: 14px; }
+
