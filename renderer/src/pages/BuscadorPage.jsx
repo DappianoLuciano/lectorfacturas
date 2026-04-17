@@ -29,12 +29,8 @@ export default function BuscadorPage() {
   const filtrado = query.trim()
     ? todos.filter((p) => {
         const q = query.toLowerCase();
-        const codigosInternos = (p.codigoInterno || "").split("/").map(c => c.trim().toLowerCase());
-        return (
-          codigosInternos.some(c => c.startsWith(q)) ||
-          p.descripcion?.toLowerCase().startsWith(q) ||
-          p.codigoProveedor?.toLowerCase().startsWith(q)
-        );
+        const codigos = (p.codigoInterno || "").split("/").map(c => c.trim().toLowerCase());
+        return codigos.some(c => c.startsWith(q));
       })
     : [];
 
