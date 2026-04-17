@@ -1,4 +1,3 @@
-// Formatea número en estilo argentino: 1234.56 → "1.234,56"
 function fmt(n) {
   if (n == null || isNaN(n)) return "—";
   return n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -65,15 +64,15 @@ export default function PrintArea({ facturaInfo, productos }) {
         <span>{productos.length} producto{productos.length !== 1 ? "s" : ""}</span>
       </div>
 
+      {/* Columnas: # | Cód. Proveedor | Descripción | Cant. | Cód. Interno | Precio Venta */}
       <table className="printTable">
         <thead>
           <tr>
             <th style={{ width: 28 }}>#</th>
-            <th>Cód. Interno</th>
             <th>Cód. Proveedor</th>
             <th>Descripción</th>
             <th className="tdCenter" style={{ width: 36 }}>Cant.</th>
-            <th className="tdRight">Costo</th>
+            <th>Cód. Interno</th>
             <th className="tdRight">Precio Venta</th>
           </tr>
         </thead>
@@ -81,11 +80,10 @@ export default function PrintArea({ facturaInfo, productos }) {
           {productos.map((p, i) => (
             <tr key={i}>
               <td className="tdCenter">{i + 1}</td>
-              <td className="tdCodInterno">{p.codigoInterno || "—"}</td>
               <td style={{ fontSize: 10 }}>{p.codigoProveedor}</td>
               <td>{p.descripcion}</td>
               <td className="tdCenter">{p.cantidad ?? 1}</td>
-              <td className="tdRight tdCosto">{fmt(p.costo)}</td>
+              <td className="tdCodInterno">{p.codigoInterno || "—"}</td>
               <td className="tdRight tdPrecio">
                 {p.precioVenta
                   ? Math.round(p.precioVenta).toLocaleString("es-AR", { maximumFractionDigits: 0 })

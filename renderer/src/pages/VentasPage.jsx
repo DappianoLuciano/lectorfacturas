@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { listStock, saveVenta, listVentas, isFirebaseConfigured } from "../db.js";
+
 
 const MEDIOS_PAGO = ["Efectivo", "Débito", "Crédito", "Transferencia"];
 
@@ -115,8 +117,9 @@ function StockView({ onVender }) {
   const [busqueda, setBusqueda] = useState("");
 
   async function cargar() {
+    if (!isFirebaseConfigured()) { setLoading(false); return; }
     setLoading(true);
-    const s = await window.api.listStock();
+    const s = await listStock();
     setStock(s);
     setLoading(false);
   }
@@ -230,7 +233,8 @@ function HistorialView() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    window.api.listVentas().then((v) => {
+    if (!isFirebaseConfigured()) { setLoading(false); return; }
+    listVentas().then((v) => {
       setVentas(v);
       setLoading(false);
     });
@@ -313,7 +317,7 @@ export default function VentasPage() {
   }
 
   async function handleVender({ precioVenta, medioPago }) {
-    await window.api.saveVenta({
+    await saveVenta({
       facturaId:     seleccionado.facturaId,
       codigoInterno: seleccionado.codigoInterno,
       precioVenta,

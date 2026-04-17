@@ -6,11 +6,13 @@ import "./styles/print.css";
 import CargaPage    from "./pages/CargaPage.jsx";
 import HistorialPage from "./pages/HistorialPage.jsx";
 import VentasPage    from "./pages/VentasPage.jsx";
+import BuscadorPage  from "./pages/BuscadorPage.jsx";
 
 const NAV = [
   { section: "FACTURAS", key: "carga",     label: "Nueva Carga" },
   { section: null,       key: "historial", label: "Historial" },
   { section: "VENTAS",  key: "ventas",    label: "Ventas" },
+  { section: null,       key: "buscador",  label: "Buscador" },
 ];
 
 // ── Banner de actualización ────────────────────────────────────────────────
@@ -144,6 +146,7 @@ export default function App() {
             {tab === "carga"     && <CargaPage />}
             {tab === "historial" && <HistorialPage />}
             {tab === "ventas"    && <VentasPage />}
+            {tab === "buscador"  && <BuscadorPage />}
           </div>
         </div>
       </main>

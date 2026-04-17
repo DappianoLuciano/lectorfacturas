@@ -125,9 +125,11 @@
   .printTable tbody tr:nth-child(even) td { background: #f5f8fb; }
   .printTable .tdCodInterno { font-weight: 900; font-size: 11px; }
   .printTable .tdPrecio     { font-weight: 900; font-size: 11px; color: #1a3a5c; }
-  .printTable .tdCosto      { color: #555; }
   .printTable .tdRight      { text-align: right; }
   .printTable .tdCenter     { text-align: center; }
+
+  /* Columna Interés nunca imprime */
+  .noPrint { display: none !important; }
 
   /* ══ FOOTER ═════════════════════════════════════════════════════════════ */
   .printFooter {

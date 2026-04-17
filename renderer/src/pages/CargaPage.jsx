@@ -1,25 +1,79 @@
 import { useState, useRef } from "react";
 import PrintArea from "./PrintArea.jsx";
+import { saveFactura, isFirebaseConfigured } from "../db.js";
 
-const MULTIPLICADORES = [2.1, 2.2, 2.3, 2.4, 2.5];
+// Factores base; la fórmula final es: costoUnit * 1.21 * factor
+const MULT_FACTORES = [2, 2.5, 3, 3.5];
 
-// Formatea número en estilo argentino: 1234.56 → "1.234,56"
 function fmt(n) {
   if (n == null || isNaN(n)) return "—";
   return n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// ── Página principal ─────────────────────────────────────────────────────────
-export default function CargaPage() {
-  const [estado, setEstado]         = useState("vacio");   // vacio | cargando | listo
-  const [facturaInfo, setFacturaInfo] = useState({});
-  const [productos, setProductos]   = useState([]);
-  const [error, setError]           = useState(null);
-  const [guardado, setGuardado]     = useState(false);
-  const [guardando, setGuardando]   = useState(false);
-  const [toast, setToast]           = useState(null);
-  const toastTimer = useRef(null);
+function costoUnit(p) {
+  return (p.costo ?? 0) / (p.cantidad || 1);
+}
 
+function calcPrecio(p, factor) {
+  return Math.round(costoUnit(p) * 1.21 * factor);
+}
+
+// ── Modal para ingresar múltiples códigos internos (cuando cantidad > 1) ──────
+function ModalMultiCodigo({ producto, onGuardar, onCancelar }) {
+  const cant = producto.cantidad || 1;
+  const partes = (producto.codigoInterno || "").split("/").filter(Boolean);
+  const inicial = Array.from({ length: cant }, (_, i) => partes[i] || "");
+  const [codigos, setCodigos] = useState(inicial);
+
+  function setVal(i, v) {
+    setCodigos((prev) => { const next = [...prev]; next[i] = v; return next; });
+  }
+
+  function handleGuardar() {
+    onGuardar(codigos.map((c) => c.trim()).join("/"));
+  }
+
+  return (
+    <div className="modalOverlay" onClick={onCancelar}>
+      <div className="modalBox" onClick={(e) => e.stopPropagation()}>
+        <div className="modalTitle">Códigos internos</div>
+        <div className="modalMsg" style={{ marginBottom: 16 }}>
+          {producto.descripcion} — {cant} {cant === 1 ? "unidad" : "unidades"}
+        </div>
+        {codigos.map((c, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)", width: 72, flexShrink: 0 }}>
+              Unidad {i + 1}
+            </span>
+            <input
+              type="text"
+              placeholder={`Ej: RB${4165 + i}`}
+              value={c}
+              onChange={(e) => setVal(i, e.target.value)}
+              style={{ flex: 1 }}
+            />
+          </div>
+        ))}
+        <div className="modalActions" style={{ marginTop: 16 }}>
+          <button className="btn" onClick={onCancelar}>Cancelar</button>
+          <button className="btnPrimary" onClick={handleGuardar}>Guardar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Página principal ──────────────────────────────────────────────────────────
+export default function CargaPage() {
+  const [estado, setEstado]           = useState("vacio");
+  const [facturaInfo, setFacturaInfo] = useState({});
+  const [productos, setProductos]     = useState([]);
+  const [error, setError]             = useState(null);
+  const [guardado, setGuardado]       = useState(false);
+  const [guardando, setGuardando]     = useState(false);
+  const [toast, setToast]             = useState(null);
+  const [modalMulti, setModalMulti]   = useState(null); // { idx }
+  const toastTimer = useRef(null);
 
   function showToast(msg) {
     setToast(msg);
@@ -42,9 +96,7 @@ export default function CargaPage() {
     }
 
     if (!result?.productos?.length) {
-      setError(
-        "No se encontraron productos en el PDF. Verificá que sea una factura con el formato esperado."
-      );
+      setError("No se encontraron productos en el PDF. Verificá que sea una factura con el formato esperado.");
       setEstado("vacio");
       return;
     }
@@ -65,25 +117,29 @@ export default function CargaPage() {
     setGuardado(false);
   }
 
-  function aplicarMult(idx, mult) {
+  function aplicarMult(idx, factor) {
     setProductos((prev) => {
       const next = [...prev];
       const p    = next[idx];
-      next[idx]  = { ...p, multiplicador: mult, precioVenta: Math.round(p.costo * mult) };
+      next[idx]  = { ...p, multiplicador: factor, precioVenta: calcPrecio(p, factor) };
       return next;
     });
   }
 
-  function aplicarMultTodos(mult) {
+  function aplicarMultTodos(factor) {
     setProductos((prev) =>
-      prev.map((p) => ({ ...p, multiplicador: mult, precioVenta: Math.round(p.costo * mult) }))
+      prev.map((p) => ({ ...p, multiplicador: factor, precioVenta: calcPrecio(p, factor) }))
     );
   }
 
   async function handleGuardar() {
+    if (!isFirebaseConfigured()) {
+      showToast("Configurá Firebase en firebase-config.js antes de guardar.");
+      return;
+    }
     setGuardando(true);
     try {
-      await window.api.saveFactura({ header: facturaInfo, productos });
+      await saveFactura({ header: facturaInfo, productos });
       setGuardado(true);
       showToast("Factura guardada en el historial.");
     } catch (e) {
@@ -91,10 +147,6 @@ export default function CargaPage() {
     } finally {
       setGuardando(false);
     }
-  }
-
-  function handleImprimir() {
-    window.print();
   }
 
   function handleNueva() {
@@ -113,6 +165,12 @@ export default function CargaPage() {
           <h2 className="pageTitle">Nueva Carga</h2>
         </div>
 
+        {!isFirebaseConfigured() && (
+          <div className="firebaseWarning">
+            Firebase no configurado — completá los valores en <code>renderer/src/firebase-config.js</code> para guardar y sincronizar datos.
+          </div>
+        )}
+
         {error && (
           <div style={{
             marginBottom: 14, padding: "10px 14px", borderRadius: 12,
@@ -126,9 +184,7 @@ export default function CargaPage() {
         <div className="uploadArea" onClick={handleCargarPdf}>
           <div className="uploadIcon">📄</div>
           <div className="uploadTitle">Cargar factura PDF</div>
-          <div className="uploadHint">
-            Hacé clic para seleccionar el archivo PDF del proveedor
-          </div>
+          <div className="uploadHint">Hacé clic para seleccionar el archivo PDF del proveedor</div>
         </div>
       </div>
     );
@@ -149,11 +205,20 @@ export default function CargaPage() {
   // ── RENDER: listo ──────────────────────────────────────────────────────────
   return (
     <div className="page">
-      {/* PrintArea — solo visible al imprimir */}
       <PrintArea facturaInfo={facturaInfo} productos={productos} />
 
+      {modalMulti !== null && (
+        <ModalMultiCodigo
+          producto={productos[modalMulti]}
+          onGuardar={(val) => {
+            updateProducto(modalMulti, "codigoInterno", val);
+            setModalMulti(null);
+          }}
+          onCancelar={() => setModalMulti(null)}
+        />
+      )}
+
       <div className="noPrint">
-        {/* Header factura */}
         <div className="facturaHeader">
           {facturaInfo.proveedor && (
             <div className="facturaHeaderItem">
@@ -179,19 +244,17 @@ export default function CargaPage() {
           </div>
         </div>
 
-        {/* Aplicar multiplicador a todos */}
         <div className="applyAllRow">
           <span>Aplicar a todos:</span>
           <div className="multRow">
-            {MULTIPLICADORES.map((m) => (
-              <button key={m} className="multBtn" onClick={() => aplicarMultTodos(m)}>
-                ×{m}
+            {MULT_FACTORES.map((f) => (
+              <button key={f} className="multBtn" onClick={() => aplicarMultTodos(f)}>
+                ×{f} +IVA
               </button>
             ))}
           </div>
         </div>
 
-        {/* Tabla de productos */}
         <div className="tableWrap">
           <table className="factTable">
             <thead>
@@ -200,9 +263,9 @@ export default function CargaPage() {
                 <th className="colCodProv">Cód. Proveedor</th>
                 <th className="colDesc">Descripción</th>
                 <th className="colCant">Cant.</th>
-                <th className="colCosto">Costo</th>
+                <th className="colCosto">Costo Unit.</th>
                 <th className="colCodInt">Cód. Interno</th>
-                <th className="colMult">Multiplicador</th>
+                <th className="colMult">Multiplicador + IVA</th>
                 <th className="colPrecio">Precio Venta</th>
               </tr>
             </thead>
@@ -213,34 +276,50 @@ export default function CargaPage() {
                   <td className="colCodProv">{p.codigoProveedor}</td>
                   <td className="colDesc">{p.descripcion}</td>
                   <td className="colCant">{p.cantidad ?? 1}</td>
-                  <td className="colCosto">{fmt(p.costo)}</td>
+                  <td className="colCosto">{fmt(costoUnit(p))}</td>
 
-                  {/* Código interno — editable */}
+                  {/* Código interno — simple si cant=1, botón de modal si cant>1 */}
                   <td className="colCodInt">
-                    <input
-                      type="text"
-                      placeholder="Ej: RB4165"
-                      value={p.codigoInterno}
-                      onChange={(e) => updateProducto(i, "codigoInterno", e.target.value)}
-                    />
+                    {(p.cantidad || 1) > 1 ? (
+                      <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                        <span style={{ fontSize: 12, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {p.codigoInterno || <span style={{ color: "var(--muted)" }}>—</span>}
+                        </span>
+                        <button
+                          className="btnSmall"
+                          style={{ padding: "3px 7px", fontSize: 11, flexShrink: 0 }}
+                          onClick={() => setModalMulti(i)}
+                          title="Ingresar códigos por unidad"
+                        >
+                          ✎
+                        </button>
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Ej: RB4165"
+                        value={p.codigoInterno}
+                        onChange={(e) => updateProducto(i, "codigoInterno", e.target.value)}
+                      />
+                    )}
                   </td>
 
-                  {/* Multiplicadores rápidos */}
+                  {/* Multiplicadores rápidos con IVA */}
                   <td className="colMult">
                     <div className="multRow">
-                      {MULTIPLICADORES.map((m) => (
+                      {MULT_FACTORES.map((f) => (
                         <button
-                          key={m}
-                          className={`multBtn ${p.multiplicador === m ? "selected" : ""}`}
-                          onClick={() => aplicarMult(i, m)}
+                          key={f}
+                          className={`multBtn ${p.multiplicador === f ? "selected" : ""}`}
+                          onClick={() => aplicarMult(i, f)}
                         >
-                          ×{m}
+                          ×{f}
                         </button>
                       ))}
                     </div>
                   </td>
 
-                  {/* Precio de venta — editable a mano */}
+                  {/* Precio de venta */}
                   <td className="colPrecio">
                     <input
                       type="text"
@@ -262,14 +341,9 @@ export default function CargaPage() {
           </table>
         </div>
 
-        {/* Barra de acciones */}
         <div className="actionBar">
-          <button className="btn" onClick={handleCargarPdf}>
-            Cargar otro PDF
-          </button>
-          <button className="btn" onClick={handleNueva}>
-            Limpiar
-          </button>
+          <button className="btn" onClick={handleCargarPdf}>Cargar otro PDF</button>
+          <button className="btn" onClick={handleNueva}>Limpiar</button>
 
           <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
             <button
@@ -279,14 +353,13 @@ export default function CargaPage() {
             >
               {guardado ? "✓ Guardada" : guardando ? "Guardando…" : "Guardar en Historial"}
             </button>
-            <button className="btnPrimary" onClick={handleImprimir}>
+            <button className="btnPrimary" onClick={() => window.print()}>
               🖨 Imprimir Lista
             </button>
           </div>
         </div>
       </div>
 
-      {/* Toast */}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );

@@ -17,6 +17,9 @@ contextBridge.exposeInMainWorld("api", {
   saveVenta:  (data) => ipcRenderer.invoke("ventas:save", data),
   listVentas: ()     => ipcRenderer.invoke("ventas:list"),
 
+  // Migración
+  exportAllData: () => ipcRenderer.invoke("data:exportAll"),
+
   // Updater
   checkForUpdates: ()   => ipcRenderer.invoke("updater:check"),
   downloadUpdate:  ()   => ipcRenderer.invoke("updater:download"),

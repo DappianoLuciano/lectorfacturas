@@ -142,6 +142,11 @@ function registerIpcHandlers() {
     const { ventas } = load();
     return ventas || [];
   });
+
+  // ── Exportar todos los datos locales (para migración a cloud) ───────────────
+  ipcMain.handle("data:exportAll", () => {
+    return load();
+  });
 }
 
 module.exports = { registerIpcHandlers };
