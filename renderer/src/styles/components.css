@@ -109,6 +109,7 @@
 .colCodInt { width: 90px; }
 .colMult   { min-width: 220px; }
 .colPrecio { min-width: 120px; text-align: right; white-space: nowrap; font-weight: 900; color: #0b7a55; }
+.colAcciones { width: 80px; text-align: center; }
 
 .colPrecio input {
   width: 80px;

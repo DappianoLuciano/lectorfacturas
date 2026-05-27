@@ -5,3 +5,4 @@ dist-electron/
 *.log
 .env
 facturas.json
+renderer/src/firebase-config.js

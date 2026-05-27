@@ -97,6 +97,16 @@ function FacturaDetalle({ factura, onVolver }) {
     setGuardado(false);
   }
 
+  function eliminarProducto(idx) {
+    const producto = productos[idx];
+    setProductos((prev) => prev.filter((_, i) => i !== idx));
+    setPrecioBase((prev) => prev.filter((_, i) => i !== idx));
+    setInteresAplicado((prev) => prev.filter((_, i) => i !== idx));
+    setInteresCustom((prev) => prev.filter((_, i) => i !== idx));
+    setGuardado(false);
+    showToast(`Producto "${producto.descripcion?.substring(0, 30)}..." eliminado. Recordá guardar los cambios.`);
+  }
+
   function aplicarMult(idx, factor) {
     setProductos((prev) => {
       const next = [...prev];
@@ -256,6 +266,7 @@ function FacturaDetalle({ factura, onVolver }) {
                 <th className="colMult">Multiplicador + IVA</th>
                 <th className="colInteres noPrint">Interés %</th>
                 <th className="colPrecio">Precio Venta</th>
+                <th className="colAcciones noPrint">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -357,6 +368,17 @@ function FacturaDetalle({ factura, onVolver }) {
                       />
                     </td>
 
+                    {/* Acciones - eliminar */}
+                    <td className="colAcciones noPrint">
+                      <button
+                        className="btnDangerSmall"
+                        onClick={() => eliminarProducto(i)}
+                        title="Eliminar este producto"
+                      >
+                        🗑
+                      </button>
+                    </td>
+
                   </tr>
                 );
               })}
@@ -438,9 +460,14 @@ export default function HistorialPage() {
   }
 
   async function handleEliminar(id) {
-    await deleteFactura(id);
-    setConfirm(null);
-    cargar();
+    try {
+      await deleteFactura(id);
+      setConfirm(null);
+      showToast("Factura eliminada exitosamente.");
+      cargar();
+    } catch (e) {
+      showToast("Error al eliminar: " + e.message);
+    }
   }
 
   async function handleMigrar() {

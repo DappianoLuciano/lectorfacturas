@@ -117,6 +117,13 @@ export default function CargaPage() {
     setGuardado(false);
   }
 
+  function eliminarProducto(idx) {
+    const producto = productos[idx];
+    setProductos((prev) => prev.filter((_, i) => i !== idx));
+    setGuardado(false);
+    showToast(`Producto "${producto.descripcion?.substring(0, 30)}..." eliminado.`);
+  }
+
   function aplicarMult(idx, factor) {
     setProductos((prev) => {
       const next = [...prev];
@@ -267,6 +274,7 @@ export default function CargaPage() {
                 <th className="colCodInt">Cód. Interno</th>
                 <th className="colMult">Multiplicador + IVA</th>
                 <th className="colPrecio">Precio Venta</th>
+                <th className="colAcciones noPrint">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -334,6 +342,17 @@ export default function CargaPage() {
                         updateProducto(i, "precioVenta", raw !== "" ? Number(raw) : null);
                       }}
                     />
+                  </td>
+
+                  {/* Acciones - eliminar */}
+                  <td className="colAcciones noPrint">
+                    <button
+                      className="btnDangerSmall"
+                      onClick={() => eliminarProducto(i)}
+                      title="Eliminar este producto"
+                    >
+                      🗑
+                    </button>
                   </td>
                 </tr>
               ))}
