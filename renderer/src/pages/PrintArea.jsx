@@ -69,11 +69,11 @@ export default function PrintArea({ facturaInfo, productos }) {
         <thead>
           <tr>
             <th style={{ width: 28 }}>#</th>
-            <th>Cód. Proveedor</th>
+            <th style={{ width: 110 }}>Cód. Proveedor</th>
             <th>Descripción</th>
             <th className="tdCenter" style={{ width: 36 }}>Cant.</th>
-            <th>Cód. Interno</th>
-            <th className="tdRight">Precio Venta</th>
+            <th style={{ width: 80, textAlign: 'right', paddingRight: 15 }}>Cód. Interno</th>
+            <th className="tdRight" style={{ width: 90 }}>Precio Venta</th>
           </tr>
         </thead>
         <tbody>
@@ -83,7 +83,7 @@ export default function PrintArea({ facturaInfo, productos }) {
               <td style={{ fontSize: 10 }}>{p.codigoProveedor}</td>
               <td>{p.descripcion}</td>
               <td className="tdCenter">{p.cantidad ?? 1}</td>
-              <td className="tdCodInterno">{p.codigoInterno || "—"}</td>
+              <td className="tdCodInterno tdRight" style={{ paddingRight: 15 }}>{p.codigoInterno || "—"}</td>
               <td className="tdRight tdPrecio">
                 {p.precioVenta
                   ? Math.round(p.precioVenta).toLocaleString("es-AR", { maximumFractionDigits: 0 })

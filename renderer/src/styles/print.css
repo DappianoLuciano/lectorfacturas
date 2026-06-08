@@ -123,8 +123,18 @@
     vertical-align: middle;
   }
   .printTable tbody tr:nth-child(even) td { background: #f5f8fb; }
-  .printTable .tdCodInterno { font-weight: 900; font-size: 11px; }
-  .printTable .tdPrecio     { font-weight: 900; font-size: 11px; color: #1a3a5c; }
+  .printTable .tdCodInterno {
+    font-weight: 900;
+    font-size: 11px;
+    text-align: right;
+    padding-right: 15px;
+  }
+  .printTable .tdPrecio     {
+    font-weight: 900;
+    font-size: 11px;
+    color: #1a3a5c;
+    padding-left: 5px;
+  }
   .printTable .tdRight      { text-align: right; }
   .printTable .tdCenter     { text-align: center; }
 
